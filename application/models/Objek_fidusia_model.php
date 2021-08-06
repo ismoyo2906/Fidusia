@@ -1,0 +1,166 @@
+<?php
+
+if (!defined('BASEPATH'))
+    exit('No direct script access allowed');
+
+class Objek_fidusia_model extends CI_Model
+{
+
+    public $table = 'objek_fidusia';
+    public $id = 'id_objek';
+    public $order = 'DESC';
+    public $bukti_objek = 'bukti_objek';
+	
+
+    function __construct()
+    {
+        parent::__construct();
+    }
+
+    // datatables
+    function json() {
+        $this->datatables->select('id_objek,pbr_nama,jenis_kategori,merk_objek,tipe_objek,tahun_objek,norak_objek,nomes_objek,warna_objek,bukti_objek,nilai_objek,nilai_penjaminan,jangka_waktu,Keterangan');
+        $this->datatables->from('objek_fidusia');
+        //add this line for join
+        $this->datatables->join('pbr_fidusia','objek_fidusia.id_pbr_fidusia = pbr_fidusia.id_pbr_fidusia','objek_fidusia.id_kategori = kategori_objek.id_kategori');
+        $this->datatables->join('kategori_objek','objek_fidusia.id_kategori = kategori_objek.id_kategori');
+        $this->datatables->add_column('action', anchor(site_url('objek_fidusia/read/$1'),'Read')." | ".anchor(site_url('objek_fidusia/update/$1'),'Update')." | ".anchor(site_url('objek_fidusia/delete/$1'),'Delete','onclick="javasciprt: return confirm(\'Are You Sure ?\')"'), 'id_objek');
+        return $this->datatables->generate();
+    }
+	
+    // get all
+    function get_all()
+    {
+        $this->db->order_by($this->id, $this->order);
+        return $this->db->get($this->table)->result();
+    }
+
+    // get data by id
+    function get_by_id($id)
+    {
+        $this->db->where($this->id, $id);
+        return $this->db->get($this->table)->row();
+    }
+    
+    // get total rows
+    function total_rows($q = NULL) {
+        $this->db->like('id_objek', $q);
+	$this->db->or_like('id_pbr_fidusia', $q);
+	$this->db->or_like('id_kategori', $q);
+	$this->db->or_like('merk_objek', $q);
+	$this->db->or_like('tipe_objek', $q);
+	$this->db->or_like('tahun_objek', $q);
+	$this->db->or_like('norak_objek', $q);
+	$this->db->or_like('nomes_objek', $q);
+	$this->db->or_like('warna_objek', $q);
+	$this->db->or_like('bukti_objek', $q);
+	$this->db->or_like('nilai_objek', $q);
+	$this->db->or_like('nilai_penjaminan', $q);
+	$this->db->or_like('jangka_waktu', $q);
+	$this->db->or_like('Keterangan', $q);
+	$this->db->from($this->table);
+        return $this->db->count_all_results();
+    }
+
+    // get data with limit and search
+    function get_limit_data($limit, $start = 0, $q = NULL) {
+        $this->db->order_by($this->id, $this->order);
+        $this->db->like('id_objek', $q);
+	$this->db->or_like('id_pbr_fidusia', $q);
+	$this->db->or_like('id_kategori', $q);
+	$this->db->or_like('merk_objek', $q);
+	$this->db->or_like('tipe_objek', $q);
+	$this->db->or_like('tahun_objek', $q);
+	$this->db->or_like('norak_objek', $q);
+	$this->db->or_like('nomes_objek', $q);
+	$this->db->or_like('warna_objek', $q);
+	$this->db->or_like('bukti_objek', $q);
+	$this->db->or_like('nilai_objek', $q);
+	$this->db->or_like('nilai_penjaminan', $q);
+	$this->db->or_like('jangka_waktu', $q);
+	$this->db->or_like('Keterangan', $q);
+	$this->db->limit($limit, $start);
+        return $this->db->get($this->table)->result();
+    }
+
+    // insert data
+    function insert($data)
+    {
+        $this->db->insert($this->table, $data);
+    }
+
+    // update data
+    function update($id, $data)
+    {
+        $this->db->where($this->id, $id);
+        $this->db->update($this->table, $data);
+    }
+
+    // delete data
+    function delete($id)
+    {
+        $this->db->where($this->id, $id);
+        $this->db->delete($this->table);
+    }
+	
+    function getAllGroups()
+    {
+        
+        $query = $this->db->get('kategori_objek');
+		/*
+        foreach ($query->result() as $row)
+        {
+            echo $row->description;
+        }*/
+
+		//$query = $this->db->get_where('kategori',array('role'=>'User'));
+        return $query->result();
+
+        //echo 'Total Results: ' . $query->num_rows();
+    }
+    function getAllPbr()
+    {
+        
+        $query = $this->db->get('pbr_fidusia');
+		/*
+        foreach ($query->result() as $row)
+        {
+            echo $row->description;
+        }*/
+
+		//$query = $this->db->get_where('pbr_fidusia',array('role'=>'User'));
+        return $query->result();
+
+        //echo 'Total Results: ' . $query->num_rows();
+    }
+
+//modif
+	function edit_data($where,$table){
+		return $this->db->get_where($table,$where);
+ 	}
+
+ 	function get_data($table){
+ 		return $this->db->get($table);
+ 	}
+
+ 	function insert_data($data,$table){
+ 		$this->db->insert($table,$data);
+ 	}
+
+ 	function update_data($where,$data,$table){
+ 		$this->db->where($where);
+ 		$this->db->update($table,$data);
+ 	}
+
+ 	function delete_data($where,$table){
+ 		$this->db->where($where);
+ 		$this->db->delete($table);
+ 	}
+	
+}
+
+/* End of file Objek_fidusia_model.php */
+/* Location: ./application/models/Objek_fidusia_model.php */
+/* Please DO NOT modify this information : */
+/* Generated by Harviacode Codeigniter CRUD Generator 2021-06-28 15:50:53 */
+/* http://harviacode.com */
